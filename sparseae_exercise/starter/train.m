@@ -14,6 +14,7 @@
 %  allow your sparse autoencoder to get good filters; you do not need to 
 %  change the parameters below.
 
+%visibleSize = 10*10;
 visibleSize = 8*8;   % number of input units 
 hiddenSize = 25;     % number of hidden units 
 sparsityParam = 0.01;   % desired average activation of the hidden units.
@@ -34,8 +35,8 @@ beta = 3;            % weight of sparsity penalty term
 %  display a random sample of 200 patches from the dataset
 
 patches = sampleIMAGES;
-display_network(patches(:,randi(size(patches,2),200,1)),8);
-
+%display_network(patches(:,randi(size(patches,2),200,1)),8);
+display_network(patches(:,1:5),8);
 
 %  Obtain random parameters theta
 theta = initializeParameters(hiddenSize, visibleSize);
@@ -134,8 +135,27 @@ options.display = 'on';
 %% STEP 5: Visualization 
 
 W1 = reshape(opttheta(1:hiddenSize*visibleSize), hiddenSize, visibleSize);
+
 display_network(W1', 12); 
 
 print -djpeg weights.jpg   % save the visualization to a file 
+
+% %% by myself
+% W1 = reshape(opttheta(1:hiddenSize*visibleSize), hiddenSize, visibleSize);
+% W2 = reshape(opttheta(hiddenSize*visibleSize+1:2*hiddenSize*visibleSize), visibleSize, hiddenSize);
+% b1 = opttheta(2*hiddenSize*visibleSize+1:2*hiddenSize*visibleSize+hiddenSize);
+% b2 = opttheta(2*hiddenSize*visibleSize+hiddenSize+1:end);
+% 
+% %º∆À„
+% five=patches(:,1:5);
+% z2=W1*five+repmat(b1,1,5);
+% a2=sigmoid(z2);
+% 
+% z3=W2*a2+repmat(b2,1,5);
+% a3=sigmoid(z3);
+% 
+% display_network(a3,8);
+% print -djpeg five_pic.jpg
+
 
 

@@ -33,13 +33,18 @@ size(COL)
 NO_IMAGE=randi(10,numpatches,1);
 size(NO_IMAGE)
 
-A=IMAGES(ROW:ROW+patchsize-1,COL:COL+patchsize-1,NO_IMAGE);
-size(A) 
+%A=IMAGES(ROW:ROW+patchsize-1,COL:COL+patchsize-1,NO_IMAGE);
+%size(A) 
 
 TMP=zeros(size(patchsize));
 
 for i=1:numpatches
-    TMP=A(:,:,i);
+    %TMP1=A(:,:,NO_IMAGE(i));
+    %TMP1 不对的原因在于A中ROW:ROW+patchsize-1最后只输出patchsize个值而不是 numpatches 个 值
+    
+    TMP=IMAGES(ROW(i):ROW(i)+patchsize-1,COL(i):COL(i)+patchsize-1,NO_IMAGE(i));
+    
+    %TMP1==TMP2
     patches(:,i)=TMP(:);
 end
 
