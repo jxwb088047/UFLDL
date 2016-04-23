@@ -24,7 +24,7 @@ beta = 3;            % weight of sparsity penalty term
 
 
 %tmp init
-hiddenSize=2
+%hiddenSize=2
 
 
 %%======================================================================
@@ -68,10 +68,10 @@ theta = initializeParameters(hiddenSize, visibleSize);
 %  gave in Step 0 above.
 
 %Temp Set parameter lambda and beta
-lambda=0
-beta=0
+%lambda=0
+%beta=0
 [cost, grad] = sparseAutoencoderCost(theta, visibleSize, hiddenSize, lambda, ...
-                                     sparsityParam, beta, patches(:,1:10));
+                                     sparsityParam, beta, patches);
 
 %%======================================================================
 %% STEP 3: Gradient Checking
@@ -83,6 +83,9 @@ beta=0
 % First, lets make sure your numerical gradient computation is correct for a
 % simple function.  After you have implemented computeNumericalGradient.m,
 % run the following: 
+debug = 0;
+if debug==1
+
 checkNumericalGradient();
 
 % Now we can use it to check your cost function and derivative calculations
@@ -90,7 +93,7 @@ checkNumericalGradient();
 numgrad = computeNumericalGradient( @(x) sparseAutoencoderCost(x, visibleSize, ...
                                                   hiddenSize, lambda, ...
                                                   sparsityParam, beta, ...
-                                                  patches(:,1:10)), theta);
+                                                  patches), theta);
 
 % Use this to visually compare the gradients side by side
 disp([numgrad grad]); 
@@ -101,7 +104,7 @@ disp(diff); % Should be small. In our implementation, these values are
             % usually less than 1e-9.
 
             % When you got this working, Congratulations!!! 
-
+end
 %%======================================================================
 %% STEP 4: After verifying that your implementation of
 %  sparseAutoencoderCost is correct, You can start training your sparse

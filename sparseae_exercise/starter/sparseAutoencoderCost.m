@@ -55,7 +55,12 @@ z3=W2*a2+repmat(b2,1,m);
 size(z3);
 a3=sigmoid(z3);
 
-cost=1/2/m*sum(sum((a3-data).^2));
+%稀疏性
+meanActivation=mean(a2,2);
+
+cost=1/2/m*sum(sum((a3-data).^2))+lambda/2*(W1(:)'*W1(:)+W2(:)'*W2(:))+beta*sum(KLDivergence(sparsityParam,meanActivation));
+
+
 
 %后向传导
 delta3=zeros(visibleSize,m);
@@ -65,13 +70,14 @@ W2grad=1/m*delta3*a2'+lambda*W2;
 b2grad=1/m*sum(delta3,2);
 
 delta2=zeros(hiddenSize,m);
-delta2=(W2'*delta3).*sigmoidGrad(z2);
+delta2=(W2'*delta3+beta*repmat(KLDivergenceGrad(sparsityParam,meanActivation),1,m)).*sigmoidGrad(z2);
 
 W1grad=1/m*delta2*a1'+lambda*W1;
 b1grad=1/m*sum(delta2,2);
 
 %fprintf('complete backforward propogation\n');
 %pause;
+
 
 
 
@@ -106,4 +112,13 @@ end
 function grad=sigmoidGrad(z)
     grad=sigmoid(z).*(1-sigmoid(z));
 end
+
+function KL=KLDivergence(sparsityParam,meanActivation)
+    KL=sparsityParam*log(sparsityParam./meanActivation)+(1-sparsityParam)*log((1-sparsityParam)./(1-meanActivation));
+end
+
+function KLGrad=KLDivergenceGrad(sparsityParam,meanActivation)
+    KLGrad=-sparsityParam./meanActivation+(1-sparsityParam)./(1-meanActivation);
+end
+
 
