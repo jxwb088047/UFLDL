@@ -14,6 +14,10 @@ x = [4; 10];
 % (The notation "@simpleQuadraticFunction" denotes a pointer to a function.)
 numgrad = computeNumericalGradient(@simpleQuadraticFunction, x);
 
+
+%tmp test
+simpleQuadraticFunction(x)
+
 % Visually examine the two gradient computations.  The two columns
 % you get should be very similar. 
 disp([numgrad grad]);

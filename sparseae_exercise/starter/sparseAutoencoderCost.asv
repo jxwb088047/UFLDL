@@ -43,19 +43,19 @@ b2grad = zeros(size(b2));
 % 
 
 %前向传导
-m=size(data,2);
+m=size(data,2)
 
 a1=data;
 
-z2=W1*a1+repmat(b1,1,m);
-size(z2);
+z2=W1*a1+repmat(b1,1,m)
+size(z2)
 a2=sigmoid(z2);
 
 z3=W2*a2+repmat(b2,1,m);
-size(z3);
+size(z3)
 a3=sigmoid(z3);
 
-cost=1/2/m*sum(sum((a3-data).^2));
+cost=1/2/m*sum(sum((a3-data).^2))
 
 %后向传导
 delta3=zeros(visibleSize,m);
@@ -70,9 +70,9 @@ delta2=(W2'*delta3).*sigmoidGrad(z2);
 W1grad=1/m*delta2*a1'+lambda*W1;
 b1grad=1/m*sum(delta2,2);
 
-%fprintf('complete backforward propogation\n');
-%pause;
 
+pause;
+fprintf()
 
 
 
@@ -104,6 +104,6 @@ function sigm = sigmoid(x)
 end
 
 function grad=sigmoidGrad(z)
-    grad=sigmoid(z).*(1-sigmoid(z));
+    grad=sigmoid(z).*(1-sigmoid(z))
 end
 

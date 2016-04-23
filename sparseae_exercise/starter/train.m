@@ -22,6 +22,11 @@ sparsityParam = 0.01;   % desired average activation of the hidden units.
 lambda = 0.0001;     % weight decay parameter       
 beta = 3;            % weight of sparsity penalty term       
 
+
+%tmp init
+hiddenSize=2
+
+
 %%======================================================================
 %% STEP 1: Implement sampleIMAGES
 %
@@ -62,8 +67,11 @@ theta = initializeParameters(hiddenSize, visibleSize);
 %  final submission of the visualized weights, please use parameters we 
 %  gave in Step 0 above.
 
+%Temp Set parameter lambda and beta
+lambda=0
+beta=0
 [cost, grad] = sparseAutoencoderCost(theta, visibleSize, hiddenSize, lambda, ...
-                                     sparsityParam, beta, patches);
+                                     sparsityParam, beta, patches(:,1:10));
 
 %%======================================================================
 %% STEP 3: Gradient Checking
@@ -82,7 +90,7 @@ checkNumericalGradient();
 numgrad = computeNumericalGradient( @(x) sparseAutoencoderCost(x, visibleSize, ...
                                                   hiddenSize, lambda, ...
                                                   sparsityParam, beta, ...
-                                                  patches), theta);
+                                                  patches(:,1:10)), theta);
 
 % Use this to visually compare the gradients side by side
 disp([numgrad grad]); 

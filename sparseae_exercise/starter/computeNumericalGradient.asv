@@ -19,17 +19,13 @@ numgrad = zeros(size(theta));
 % Hint: You will probably want to compute the elements of numgrad one at a time. 
 
 EPSILON = 10^-4
-m=length(theta);
-%I=eye(m);
-p=zeros(size(theta));
+%value=0;
+%[value,numgrad]=(J(theta+EPSILON)-J(theta-EPSILON))./(2*EPSILON);
 
-for i=1:m
-    p(i)=EPSILON;
-    numgrad(i)=(J(theta+p)-J(theta-p))/(2*EPSILON);
-    p(i)=0;
-end
+for i=1:numel(num)
 
-fprintf('complete computeNumericalGradient\n');
+
+
 
 %% ---------------------------------------------------------------
 end
