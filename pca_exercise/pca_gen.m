@@ -7,7 +7,7 @@ close all; clear;clc;
 %  You do not need to change the code below.
 
 x = sampleIMAGESRAW();
-figure('name','Raw images1111');
+figure('name','Raw images');
 %randsel = randi(size(x,2),200,1); % A random selection of samples for visualization
 randsel = randi(size(x,2),6*6,1); % A random selection of samples for visualization
 display_network(x(:,randsel));
@@ -49,6 +49,7 @@ covar = zeros(size(x, 1)); % You need to compute this
 %covar=;
 %% 这里有疑惑 start
 covar=xRot*xRot'/size(xRot,2);
+
 %% 这里有疑惑 end
 
 % Visualise the covariance matrix. You should see a line across the
@@ -74,6 +75,11 @@ for k = 1:size(x,1)
         break;
     end
 end
+
+%或者实现为：
+cumLambda=cumsum(lambda);
+k1=min(find(cumLambda/cumLambda(end)>=0.9));
+k=min(find(cumLambda/cumLambda(end)>=0.99));
 
 fprintf('The number of components k1 is %d\n',k1);
 fprintf('The number of components k is %d\n',k);
