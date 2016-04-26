@@ -1,4 +1,5 @@
 %%================================================================
+close all; clear;clc;
 %% Step 0a: Load data
 %  Here we provide the code to load natural image data into x.
 %  x will be a 144 * 10000 matrix, where the kth column x(:, k) corresponds to
@@ -6,8 +7,9 @@
 %  You do not need to change the code below.
 
 x = sampleIMAGESRAW();
-figure('name','Raw images');
-randsel = randi(size(x,2),200,1); % A random selection of samples for visualization
+figure('name','Raw images1111');
+%randsel = randi(size(x,2),200,1); % A random selection of samples for visualization
+randsel = randi(size(x,2),6*6,1); % A random selection of samples for visualization
 display_network(x(:,randsel));
 
 %%================================================================
@@ -15,6 +17,9 @@ display_network(x(:,randsel));
 %  You can make use of the mean and repmat/bsxfun functions.
 
 % -------------------- YOUR CODE HERE -------------------- 
+avg=mean(x,1);
+size(avg)
+x=bsxfun(@minus,x,avg);
 
 %%================================================================
 %% Step 1a: Implement PCA to obtain xRot
@@ -25,6 +30,10 @@ display_network(x(:,randsel));
 % -------------------- YOUR CODE HERE -------------------- 
 xRot = zeros(size(x)); % You need to compute this
 
+sigma=x*x'/size(x,2);
+[u,s,v]=svd(sigma);
+
+xRot=u'*x;
 
 %%================================================================
 %% Step 1b: Check your implementation of PCA
@@ -37,10 +46,14 @@ xRot = zeros(size(x)); % You need to compute this
 
 % -------------------- YOUR CODE HERE -------------------- 
 covar = zeros(size(x, 1)); % You need to compute this
+%covar=;
+%% 这里有疑惑 start
+covar=xRot*xRot'/size(xRot,2);
+%% 这里有疑惑 end
 
 % Visualise the covariance matrix. You should see a line across the
 % diagonal against a blue background.
-figure('name','Visualisation of covariance matrix');
+figure('name','(here now)Visualisation of covariance matrix');
 imagesc(covar);
 
 %%================================================================
@@ -50,7 +63,20 @@ imagesc(covar);
 
 % -------------------- YOUR CODE HERE -------------------- 
 k = 0; % Set k accordingly
+percetage=0;
+lambda=diag(s);
+k1=0;
+for k = 1:size(x,1)
+    percentage=sum(lambda(1:k))/sum(lambda);
+    if percentage>=0.9 && k1==0,
+        k1=k;
+    elseif percentage >=0.99,
+        break;
+    end
+end
 
+fprintf('The number of components k1 is %d\n',k1);
+fprintf('The number of components k is %d\n',k);
 
 %%================================================================
 %% Step 3: Implement PCA with dimension reduction
@@ -69,6 +95,10 @@ k = 0; % Set k accordingly
 % -------------------- YOUR CODE HERE -------------------- 
 xHat = zeros(size(x));  % You need to compute this
 
+xHat=u(:,1:k)*xRot(1:k,:);
+
+xHat1=zeros(size(x));
+xHat1=u(:,1:k1)*xRot(1:k1,:);
 
 % Visualise the data, and compare it to the raw data
 % You should observe that the raw and processed data are of comparable quality.
@@ -77,6 +107,8 @@ xHat = zeros(size(x));  % You need to compute this
 
 figure('name',['PCA processed images ',sprintf('(%d / %d dimensions)', k, size(x, 1)),'']);
 display_network(xHat(:,randsel));
+figure('name',['PCA processed images ',sprintf('(%d / %d dimensions)', k1, size(x, 1)),'']);
+display_network(xHat1(:,randsel));
 figure('name','Raw images');
 display_network(x(:,randsel));
 
@@ -85,11 +117,14 @@ display_network(x(:,randsel));
 %  Implement PCA with whitening and regularisation to produce the matrix
 %  xPCAWhite. 
 
-epsilon = 0.1;
-xPCAWhite = zeros(size(x));
+%epsilon = 0.1;
+epsilon=1;
+
 
 % -------------------- YOUR CODE HERE -------------------- 
+xPCAWhite = zeros(size(x));
 
+xPCAWhite=diag(1./sqrt(diag(s)+epsilon))*xRot;
 %%================================================================
 %% Step 4b: Check your implementation of PCA whitening 
 %  Check your implementation of PCA whitening with and without regularisation. 
@@ -107,10 +142,19 @@ xPCAWhite = zeros(size(x));
 %  becoming smaller.
 
 % -------------------- YOUR CODE HERE -------------------- 
-
+covar=xPCAWhite*xPCAWhite'/size(xPCAWhite,2);
 % Visualise the covariance matrix. You should see a red line across the
 % diagonal against a blue background.
-figure('name','Visualisation of covariance matrix');
+figure('name','Visualisation of covariance matrix with regularisation');
+imagesc(covar);
+
+xPCAWhiteWithoutReg = zeros(size(x));
+epsilon=0
+xPCAWhiteWithoutReg=diag(1./sqrt(diag(s)+epsilon))*xRot;
+covar=xPCAWhiteWithoutReg*xPCAWhiteWithoutReg'/size(xPCAWhiteWithoutReg,2);
+% Visualise the covariance matrix. You should see a red line across the
+% diagonal against a blue background.
+figure('name','Visualisation of covariance matrix without regularisation');
 imagesc(covar);
 
 %%================================================================
@@ -122,6 +166,8 @@ imagesc(covar);
 xZCAWhite = zeros(size(x));
 
 % -------------------- YOUR CODE HERE -------------------- 
+xZCAWhite=u*xPCAWhite;
+
 
 % Visualise the data, and compare it to the raw data.
 % You should observe that the whitened images have enhanced edges.
@@ -129,3 +175,5 @@ figure('name','ZCA whitened images');
 display_network(xZCAWhite(:,randsel));
 figure('name','Raw images');
 display_network(x(:,randsel));
+
+%% 总结 在epsilon=1，0.1，0.01情况下，显然 epsilon = 1 效果更好
