@@ -21,13 +21,21 @@ title('Raw data');
 % -------------------- YOUR CODE HERE -------------------- 
 u = zeros(size(x, 1)); % You need to compute this
 
+%avg=mean(x,1);
+%x=x-repmat(avg,size(x,1),1);
 
+sigma=x*x'/size(x,2);
+[u,s,v]=svd(sigma);
+
+u(:,1)
+u(:,2)
 % -------------------------------------------------------- 
 hold on
 plot([0 u(1,1)], [0 u(2,1)]);
 plot([0 u(1,2)], [0 u(2,2)]);
 scatter(x(1, :), x(2, :));
 hold off
+
 
 %%================================================================
 %% Step 1b: Compute xRot, the projection on to the eigenbasis
@@ -37,6 +45,7 @@ hold off
 % -------------------- YOUR CODE HERE -------------------- 
 xRot = zeros(size(x)); % You need to compute this
 
+xRot=u'*x;
 
 % -------------------------------------------------------- 
 
@@ -45,6 +54,7 @@ xRot = zeros(size(x)); % You need to compute this
 figure(2);
 scatter(xRot(1, :), xRot(2, :));
 title('xRot');
+
 
 %%================================================================
 %% Step 2: Reduce the number of dimensions from 2 to 1. 
@@ -56,7 +66,10 @@ title('xRot');
 k = 1; % Use k = 1 and project the data onto the first eigenbasis
 xHat = zeros(size(x)); % You need to compute this
 
+%xRot=zeros(size(x));
+xRot(1:k,:)=u(:,1:k)'*x;
 
+xHat=u*xRot;
 
 % -------------------------------------------------------- 
 figure(3);
@@ -72,13 +85,15 @@ epsilon = 1e-5;
 % -------------------- YOUR CODE HERE -------------------- 
 xPCAWhite = zeros(size(x)); % You need to compute this
 
-
+xRot=u'*x;
+xPCAWhite=diag(1./sqrt(diag(s)+epsilon))*xRot;
 
 
 % -------------------------------------------------------- 
 figure(4);
 scatter(xPCAWhite(1, :), xPCAWhite(2, :));
 title('xPCAWhite');
+
 
 %%================================================================
 %% Step 3: ZCA Whitening
@@ -87,6 +102,7 @@ title('xPCAWhite');
 % -------------------- YOUR CODE HERE -------------------- 
 xZCAWhite = zeros(size(x)); % You need to compute this
 
+xZCAWhite=u*xPCAWhite;
 
 % -------------------------------------------------------- 
 figure(5);
@@ -95,3 +111,15 @@ title('xZCAWhite');
 
 %% Congratulations! When you have reached this point, you are done!
 %  You can now move onto the next PCA exercise. :)
+
+%% 自己实验补充 X_ZCA和X/sqrt(S)
+x_test = zeros(size(x));
+x_test=diag(1./sqrt(diag(s)+epsilon))*x;
+
+figure(6);
+scatter(x_test(1, :), x_test(2, :));
+title('x_test');
+
+%% 自己的一些总结：
+% 图1，3对比得，降维是有效的
+% 图2，4对比得，4只是进行一定比例的缩放
