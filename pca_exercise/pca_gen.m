@@ -81,6 +81,7 @@ cumLambda=cumsum(lambda);
 k1=min(find(cumLambda/cumLambda(end)>=0.9));
 k=min(find(cumLambda/cumLambda(end)>=0.99));
 
+
 fprintf('The number of components k1 is %d\n',k1);
 fprintf('The number of components k is %d\n',k);
 
