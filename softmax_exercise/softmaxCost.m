@@ -24,6 +24,20 @@ thetagrad = zeros(numClasses, inputSize);
 %                The groundTruth matrix might come in handy.
 
 
+h=zeros(numClasses,numCases);
+h=theta*data;
+h=bsxfun(@minus,h,max(h,[],1));
+h=bsxfun(@rdivide,exp(h),sum(exp(h),1));
+size(h);
+
+cost= -1/numCases*sum(sum(groundTruth.*log(h)))+lambda/2*sum(sum(theta.^2));
+
+%% 对于下面矩阵相乘的解释：
+%正常情况下，thetagrad(j)=x(i)*delta(j,i)的求和（i：m）(这里忽略系数-1/numCases),
+%用矩阵表示为thetagrad(j)=x*delta(j,:)',
+%由于thetagrad在维度上和theta是一致的，而正好theta=(theta(1),theta(2),...theta(k))'
+%所以要对所求表示做一次转置操作
+thetagrad=-1/numCases*(groundTruth-h)*data'+lambda*theta;
 
 
 
