@@ -32,6 +32,7 @@ size(h);
 
 cost= -1/numCases*sum(sum(groundTruth.*log(h)))+lambda/2*sum(sum(theta.^2));
 
+
 %% 对于下面矩阵相乘的解释：
 %正常情况下，thetagrad(j)=x(i)*delta(j,i)的求和（i：m）(这里忽略系数-1/numCases),
 %用矩阵表示为thetagrad(j)=x*delta(j,:)',
