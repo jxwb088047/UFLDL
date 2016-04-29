@@ -125,8 +125,11 @@ softmaxModel = struct;
 % trainLabels
 
 
+lambda=10^-4
 
-
+options.maxIter = maxIter;
+softmaxModel = softmaxTrain(inputSize, numLabels, lambda, ...
+                            trainFeatures, trainLabels, options);
 
 
 
@@ -147,7 +150,7 @@ softmaxModel = struct;
 
 
 
-
+[pred] = softmaxPredict(softmaxModel, testFeatures);
 
 
 
@@ -161,7 +164,7 @@ softmaxModel = struct;
 
 % Classification Score
 fprintf('Test Accuracy: %f%%\n', 100*mean(pred(:) == testLabels(:)));
-
+display([pred(:) testLabels(:)])
 % (note that we shift the labels by 1, so that digit 0 now corresponds to
 %  label 1)
 %
