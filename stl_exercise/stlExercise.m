@@ -69,13 +69,27 @@ theta = initializeParameters(hiddenSize, inputSize);
 %  Find opttheta by running the sparse autoencoder on
 %  unlabeledTrainingImages
 
+tic;
 opttheta = theta; 
 
+addpath minFunc/
+options.Method = 'lbfgs';
+
+options.maxIter = maxIter;	  % Maximum number of iterations of L-BFGS to run 
+options.display = 'on';
+
+
+[opttheta, cost] = minFunc( @(p) sparseAutoencoderCost(p, ...
+                                   inputSize, hiddenSize, ...
+                                   lambda, sparsityParam, ...
+                                   beta, unlabeledData), ...
+                              theta, options);
 
 
 
+toc;
 
-
+%fprintf('The end time is %s \n',datestr(now));
 
 
 
