@@ -128,13 +128,17 @@ softmaxModel = struct;
 lambda=10^-4
 
 options.maxIter = maxIter;
-softmaxModel = softmaxTrain(inputSize, numLabels, lambda, ...
+%softmaxModel = softmaxTrain(inputSize, numLabels, lambda, ...
+%                            trainFeatures, trainLabels, options);
+
+
+% 注意：这里应该使用隐层的节点数作为输入点
+softmaxModel = softmaxTrain(hiddenSize, numLabels, lambda, ...
                             trainFeatures, trainLabels, options);
 
-
-
-
-
+%用于验证raw pixels下训练的结果是否为96%
+% softmaxModel = softmaxTrain(inputSize, numLabels, lambda, ...
+%                             trainData, trainLabels, options);
 
 %% -----------------------------------------------------
 
@@ -151,6 +155,7 @@ softmaxModel = softmaxTrain(inputSize, numLabels, lambda, ...
 
 
 [pred] = softmaxPredict(softmaxModel, testFeatures);
+% [pred] = softmaxPredict(softmaxModel, testData);
 
 
 
@@ -164,7 +169,8 @@ softmaxModel = softmaxTrain(inputSize, numLabels, lambda, ...
 
 % Classification Score
 fprintf('Test Accuracy: %f%%\n', 100*mean(pred(:) == testLabels(:)));
-display([pred(:) testLabels(:)])
+%display([pred(:) testLabels(:)]);
+
 % (note that we shift the labels by 1, so that digit 0 now corresponds to
 %  label 1)
 %
