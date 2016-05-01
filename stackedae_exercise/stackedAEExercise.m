@@ -44,7 +44,8 @@ trainLabels(trainLabels == 0) = 10; % Remap 0 to 10 since our labels need to sta
 
 %tmp
 debug=0;
-if debug==1
+if debug==1 
+end    
 %%======================================================================
 %% STEP 2: Train the first sparse autoencoder
 %  This trains the first sparse autoencoder on the unlabelled STL training
@@ -145,7 +146,7 @@ save sae2Features_file sae2Features;
 %  Randomly initialize the parameters
 saeSoftmaxTheta = 0.005 * randn(hiddenSizeL2 * numClasses, 1);
 
-end
+
 %% ---------------------- YOUR CODE HERE  ---------------------------------
 %  Instructions: Train the softmax classifier, the classifier takes in
 %                input of dimension "hiddenSizeL2" corresponding to the
@@ -211,18 +212,19 @@ stackedAETheta = [ saeSoftmaxOptTheta ; stackparams ];
 %
 
 
+%addpath minFunc/;
+%options.Method = 'lbfgs'; % Here, we use L-BFGS to optimize our cost
+                          % function. Generally, for minFunc to work, you
+                          % need a function pointer with two outputs: the
+                          % function value and the gradient. In our problem,
+                          % softmaxCost.m satisfies this.
+%minFuncOptions.display = 'on';
 
-
-
-
-
-
-
-
-
-
-
-
+[stackedAEOptTheta, cost] = minFunc( @(p) stackedAECost(p, ...
+                                   inputSize,hiddenSizeL2,...
+                                   numClasses,netconfig,...
+                                   lambda, trainData, trainLabels),...
+                              stackedAETheta, options);
 
 
 

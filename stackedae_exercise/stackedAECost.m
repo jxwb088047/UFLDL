@@ -93,7 +93,7 @@ cost=-1/M*sum(sum(groundTruth.*log(H)))+decayTerm1+decayTerm2;
 
 
 %softmaxThetaGrad=softmaxTheta'*(groundTruth-H);
-softmaxThetaGrad=-1/M*(groundTruth-H)*activation{num_activation}+lambda*softmaxTheta;
+softmaxThetaGrad=-1/M*(groundTruth-H)*activation{num_activation}'+lambda*softmaxTheta;
 
 delta=cell(size(num_activation,1));
 delta{num_activation}=softmaxTheta'*(groundTruth-H);
