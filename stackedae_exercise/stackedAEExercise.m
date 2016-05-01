@@ -41,6 +41,10 @@ trainLabels = loadMNISTLabels('mnist/train-labels.idx1-ubyte');
 
 trainLabels(trainLabels == 0) = 10; % Remap 0 to 10 since our labels need to start from 1
 
+
+%tmp
+debug=0;
+if debug==1
 %%======================================================================
 %% STEP 2: Train the first sparse autoencoder
 %  This trains the first sparse autoencoder on the unlabelled STL training
@@ -74,7 +78,7 @@ options.display = 'on';
                               sae1Theta, options);
 
 
-
+save sae1OptTheta_file sae1OptTheta;
 
 
 
@@ -98,6 +102,7 @@ options.display = 'on';
 [sae1Features] = feedForwardAutoencoder(sae1OptTheta, hiddenSizeL1, ...
                                         inputSize, trainData);
 
+save sae1Features_file sae1Features;                                    
 %  Randomly initialize the parameters
 sae2Theta = initializeParameters(hiddenSizeL2, hiddenSizeL1);
 
@@ -109,12 +114,16 @@ sae2Theta = initializeParameters(hiddenSizeL2, hiddenSizeL1);
 %                You should store the optimal parameters in sae2OptTheta
 
 
+sae2OptTheta = sae2Theta; 
+
+[sae2OptTheta, cost] = minFunc( @(p) sparseAutoencoderCost(p, ...
+                                   hiddenSizeL1, hiddenSizeL2, ...
+                                   lambda, sparsityParam, ...
+                                   beta, sae1Features), ...
+                              sae2Theta, options);
 
 
-
-
-
-
+save sae2OptTheta_file sae2OptTheta;
 
 
 
@@ -132,10 +141,11 @@ sae2Theta = initializeParameters(hiddenSizeL2, hiddenSizeL1);
 [sae2Features] = feedForwardAutoencoder(sae2OptTheta, hiddenSizeL2, ...
                                         hiddenSizeL1, sae1Features);
 
+save sae2Features_file sae2Features;                                         
 %  Randomly initialize the parameters
 saeSoftmaxTheta = 0.005 * randn(hiddenSizeL2 * numClasses, 1);
 
-
+end
 %% ---------------------- YOUR CODE HERE  ---------------------------------
 %  Instructions: Train the softmax classifier, the classifier takes in
 %                input of dimension "hiddenSizeL2" corresponding to the
@@ -145,13 +155,27 @@ saeSoftmaxTheta = 0.005 * randn(hiddenSizeL2 * numClasses, 1);
 %
 %  NOTE: If you used softmaxTrain to complete this part of the exercise,
 %        set saeSoftmaxOptTheta = softmaxModel.optTheta(:);
+load 'sae1Features_file.mat';
+load 'sae2Features_file.mat';
+load 'sae1OptTheta_file.mat';
+load 'sae2OptTheta_file.mat';
+load 'saeSoftmaxOptTheta_file.mat';
+
+lambda=10^-4
+
+addpath minFunc/
+options.Method = 'lbfgs';
+
+options.maxIter = maxIter;	  % Maximum number of iterations of L-BFGS to run 
+options.display = 'on';
+
+softmaxModel = softmaxTrain(hiddenSizeL2, numClasses, lambda, ...
+                            sae2Features, trainLabels, options);
 
 
+saeSoftmaxOptTheta=softmaxModel.optTheta(:);
 
-
-
-
-
+save saeSoftmaxOptTheta_file saeSoftmaxOptTheta;
 
 
 
@@ -214,8 +238,8 @@ stackedAETheta = [ saeSoftmaxOptTheta ; stackparams ];
 
 % Get labelled test images
 % Note that we apply the same kind of preprocessing as the training set
-testData = loadMNISTImages('mnist/t10k-images-idx3-ubyte');
-testLabels = loadMNISTLabels('mnist/t10k-labels-idx1-ubyte');
+testData = loadMNISTImages('mnist/t10k-images.idx3-ubyte');
+testLabels = loadMNISTLabels('mnist/t10k-labels.idx1-ubyte');
 
 testLabels(testLabels == 0) = 10; % Remap 0 to 10
 

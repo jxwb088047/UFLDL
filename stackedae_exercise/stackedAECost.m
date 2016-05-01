@@ -62,10 +62,55 @@ groundTruth = full(sparse(labels, 1:M, 1));
 %
 
 
+num_activation=size(stack,1)+1;
+z=cell(num_activation,1);
+activation=cell(num_activation,1);
+
+activation{1}=data;
+
+for i=2:num_activation
+    %size(stack{i-1}.w)
+    %size(activation{i-1})
+    %size(stack{i-1}.b)
+    z{i}=bsxfun(@plus,stack{i-1}.w*activation{i-1},stack{i-1}.b);
+    activation{i}=sigmoid(z{i});    
+end
+
+H=zeros(size(groundTruth));
+H=softmaxTheta*activation{num_activation};
+H=bsxfun(@minus,H,max(H,[],1));
+H=exp(H);
+H=bsxfun(@rdivide,H,sum(H,1));
+
+decayTerm1=0;
+for d = 1:numel(stack)
+    decayTerm1=decayTerm1+sum(sum(stack{d}.w.^2));
+end
+decayTerm1=lambda/2*decayTerm1;
+
+decayTerm2=lambda/2*sum(sum(softmaxTheta.^2));
+cost=-1/M*sum(sum(groundTruth.*log(H)))+decayTerm1+decayTerm2;
 
 
+%softmaxThetaGrad=softmaxTheta'*(groundTruth-H);
+softmaxThetaGrad=-1/M*(groundTruth-H)*activation{num_activation}+lambda*softmaxTheta;
 
+delta=cell(size(num_activation,1));
+delta{num_activation}=softmaxTheta'*(groundTruth-H);
+delta{num_activation}=-1*delta{num_activation}.*sigmoidGrad(z{num_activation});
 
+for l=num_activation-1:-1:2
+    delta{l}=(stack{l}.w'*delta{l+1}).*sigmoidGrad(z{l});
+end
+
+for d=numel(stack):-1:1
+    size(stackgrad{d}.w);
+    stackgrad{d}.w = 1/M*delta{d+1}*activation{d}'+lambda*stack{d}.w;
+    size(stackgrad{d}.w);
+    size(stackgrad{d}.b);
+    stackgrad{d}.b = 1/M*sum(delta{d+1},2);
+    size(stackgrad{d}.b);
+end
 
 
 
@@ -86,4 +131,8 @@ end
 % You might find this useful
 function sigm = sigmoid(x)
     sigm = 1 ./ (1 + exp(-x));
+end
+
+function sigmGrad=sigmoidGrad(x)
+    sigmGrad=sigmoid(x).*(1-sigmoid(x));
 end

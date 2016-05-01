@@ -24,6 +24,8 @@ softmaxTheta = 0.005 * randn(hiddenSize * numClasses, 1);
 [stackparams, netconfig] = stack2params(stack);
 stackedAETheta = [ softmaxTheta ; stackparams ];
 
+%tmp init
+lambda=0
 
 [cost, grad] = stackedAECost(stackedAETheta, inputSize, hiddenSize, ...
                              numClasses, netconfig, ...
