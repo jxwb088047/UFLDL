@@ -79,3 +79,5 @@ function sigm = sigmoid(x)
     sigm = 1 ./ (1 + exp(-x));
 end
 
+%%若使用tanh的话，最好数据是服从标准正态分布的 f(x)=a*tanh(b*x),其中a=1.7159,b=2/3
+
