@@ -8,6 +8,10 @@
 %  the code in sparseAutoencoderLinearCost.m. You will not need to modify
 %  any code in this file.
 
+%% 一些个人理解
+% 由于 sigmoid  函数的值域为[0,1]，而数据的输入可能不在这个范围，使得原来的自编码器无法重构之前的超出输入部分的内容
+% 如(-infinite,0) U (1,+infinite),而线性解码器能将z3的输入直接输出，即f(z3)=z3,确保了范围不变。
+%
 %%======================================================================
 %% STEP 0: Initialization
 %  Here we initialize some parameters used for the exercise.
